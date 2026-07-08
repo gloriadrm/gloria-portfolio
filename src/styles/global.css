@@ -1,0 +1,139 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@plugin "daisyui" {
+  themes: gloria --default, gloria-dark --prefersdark;
+}
+
+/*
+  Tema personalizado "gloria": paleta beige/tierra, sin rosa, tonos pastel
+  sin saturar. Cambia estos valores para ajustar el color del sitio entero
+  desde un único sitio — nunca toques los componentes para cambiar color.
+*/
+@plugin "daisyui/theme" {
+  name: "gloria";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #F5EAE0;
+  --color-base-200: #EEDDCB;
+  --color-base-300: #E2CDB5;
+  --color-base-content: #3A2E24;
+
+  --color-primary: #B97D50;
+  --color-primary-content: #FEFBF7;
+
+  --color-secondary: #4F5A44;
+  --color-secondary-content: #EAF0E5;
+
+  --color-accent: #7C8A6E;
+  --color-accent-content: #1F2A1B;
+
+  --color-neutral: #3A2E24;
+  --color-neutral-content: #F5EAE0;
+
+  --color-info: #6B8AA0;
+  --color-info-content: #F0F5F8;
+  --color-success: #5C7A52;
+  --color-success-content: #EEF4EC;
+  --color-warning: #C97A3D;
+  --color-warning-content: #FBF1E8;
+  --color-error: #B5504A;
+  --color-error-content: #FBEDEC;
+
+  --radius-selector: 1rem;
+  --radius-field: 0.6rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+/*
+  Tema oscuro "gloria-dark": mismos tonos tierra, invertidos para fondo
+  oscuro. Se activa con el toggle del nav o automáticamente si el sistema
+  del visitante prefiere modo oscuro (prefersdark).
+*/
+@plugin "daisyui/theme" {
+  name: "gloria-dark";
+  default: false;
+  prefersdark: true;
+  color-scheme: dark;
+
+  --color-base-100: #211B16;
+  --color-base-200: #2B241D;
+  --color-base-300: #3A2E24;
+  --color-base-content: #F1E7DA;
+
+  --color-primary: #C98F5E;
+  --color-primary-content: #241A12;
+
+  --color-secondary: #8FA37E;
+  --color-secondary-content: #14200F;
+
+  --color-accent: #A9B79A;
+  --color-accent-content: #1B2416;
+
+  --color-neutral: #F1E7DA;
+  --color-neutral-content: #211B16;
+
+  --color-info: #8FB0C4;
+  --color-info-content: #10202A;
+  --color-success: #8AAE7C;
+  --color-success-content: #0F1A0C;
+  --color-warning: #E0A15E;
+  --color-warning-content: #2B1B08;
+  --color-error: #E08B84;
+  --color-error-content: #2B0F0D;
+
+  --radius-selector: 1rem;
+  --radius-field: 0.6rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@theme {
+  --font-serif-display: "Fraunces", Georgia, serif;
+  --font-mono-label: "Space Mono", monospace;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* @utility (no clases sueltas): así funcionan con variantes/prefijos como
+   prose-h3:font-display o prose-h2:font-label, no solo en uso directo. */
+@utility font-display {
+  font-family: var(--font-serif-display);
+}
+@utility font-label {
+  font-family: var(--font-mono-label);
+}
+
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* Cita destacada dentro de contenido markdown (p.ej. "Sobre mí"): mismos
+   tokens de color y tipografía que el resto del sitio, sin las comillas
+   automáticas de la tipografía por defecto de los blockquote. */
+.quote-card {
+  background: var(--color-base-100);
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 1rem 1rem 0;
+  padding: 1.25rem 1.75rem;
+  margin: 1.75rem 0;
+}
+.quote-card p {
+  font-family: var(--font-serif-display);
+  font-weight: 600;
+  font-size: 1.35rem;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--color-base-content);
+}

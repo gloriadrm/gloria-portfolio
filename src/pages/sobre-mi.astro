@@ -1,0 +1,79 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import site from '../data/site.json';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const [entry] = await getCollection('sobreMi');
+const { Content } = await render(entry);
+const { formacion, experiencia } = entry.data;
+---
+<BaseLayout title={`Sobre mí — ${site.name}`} description="Perfil, formación, experiencia laboral y competencias técnicas.">
+
+  <section class="pt-16 pb-14">
+    <div class="max-w-3xl mx-auto px-6">
+      <a href={`${base}/`} class="text-sm font-semibold text-secondary link mb-6 inline-block">← Volver al inicio</a>
+      <div class="mb-10 reveal">
+        <span class="block font-label text-xs tracking-widest uppercase text-primary mb-2">Perfil</span>
+        <h2 class="font-display text-2xl">Sobre mí</h2>
+      </div>
+      <div class="prose prose-neutral max-w-none text-base-content/80 reveal
+        prose-h3:font-display prose-h3:text-2xl prose-h3:text-secondary prose-h3:mt-14 prose-h3:mb-4 prose-h3:first:mt-0">
+        <Content />
+      </div>
+    </div>
+  </section>
+
+  <section class="py-14 border-t border-base-300">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="mb-10 reveal">
+        <span class="block font-label text-xs tracking-widest uppercase text-primary mb-2">Trayectoria</span>
+        <h2 class="font-display text-2xl">Experiencia laboral relevante</h2>
+      </div>
+      <div class="reveal">
+        {experiencia.map((e) => (
+          <div class="grid md:grid-cols-[200px_1fr] gap-6 py-6 border-b border-base-300 last:border-none">
+            <div class="font-label text-sm text-base-content/50 pt-1">{e.periodo}</div>
+            <div>
+              <h3 class="font-display text-lg mb-1">{e.puesto}</h3>
+              <div class="text-secondary font-semibold text-sm mb-2">{e.empresa}</div>
+              <p class="text-base-content/70 text-sm">{e.descripcion}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-10 border-t border-base-300">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="mb-6 reveal">
+        <span class="block font-label text-xs tracking-widest uppercase text-primary mb-2">Formación</span>
+      </div>
+      <div class="flex flex-col gap-3 reveal">
+        {formacion.map((f) => (
+          <div class="flex flex-wrap items-baseline gap-x-3 text-sm border-b border-base-300 pb-3 last:border-none">
+            <span class="font-label text-base-content/45 shrink-0">{f.periodo}</span>
+            <span class="font-semibold">{f.titulo}</span>
+            <span class="text-base-content/55">— {f.institucion}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-14 border-t border-base-300">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="card bg-base-100 border border-base-300 reveal">
+        <div class="card-body items-center text-center gap-4 py-10">
+          <p class="text-base-content/70">¿Quieres ver cómo aplico todo esto en la práctica?</p>
+          <div class="flex flex-wrap justify-center gap-6 font-semibold text-secondary">
+            <a href={`${base}/proyectos/`} class="link">Ver portfolio técnico →</a>
+            <a href={`${base}/${site.cvFile}`} download class="link">Descargar CV</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>

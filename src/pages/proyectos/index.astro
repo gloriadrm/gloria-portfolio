@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import site from '../../data/site.json';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const proyectos = (await getCollection('proyectos')).sort((a, b) => a.data.order - b.data.order);
+---
+<BaseLayout title={`Proyectos — ${site.name}`} description="Casos de estudio de Ingeniería de Datos, Cloud, Machine Learning e Inteligencia Artificial: problema, arquitectura, decisiones técnicas y aprendizajes.">
+
+  <section class="pt-16 pb-20">
+    <div class="max-w-5xl mx-auto px-6">
+      <a href={`${base}/`} class="text-sm font-semibold text-secondary link mb-6 inline-block">← Volver al inicio</a>
+
+      <div class="mb-12 reveal">
+        <span class="block font-label text-xs tracking-widest uppercase text-primary mb-2">Portfolio técnico</span>
+        <h1 class="font-display text-3xl md:text-4xl mb-3">Proyectos</h1>
+        <p class="text-base-content/70 max-w-xl">Cada proyecto es un caso de estudio: problema, arquitectura, decisiones técnicas y aprendizajes — no solo el resultado final.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 reveal">
+        {proyectos.map((p) => (
+          <ProjectCard
+            id={p.id}
+            title={p.data.title}
+            status={p.data.status}
+            statusLabel={p.data.statusLabel}
+            problem={p.data.problem}
+            description={p.data.description}
+            stack={p.data.stack}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>

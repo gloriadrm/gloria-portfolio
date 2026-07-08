@@ -1,0 +1,46 @@
+---
+import Tag from './Tag.astro';
+import StatusBadge from './StatusBadge.astro';
+
+interface Props {
+  id: string;
+  title: string;
+  status: 'progress' | 'done';
+  statusLabel: string;
+  problem: string;
+  description: string;
+  stack: string[];
+  competencias: string[];
+}
+const { id, title, status, statusLabel, problem, description, stack, competencias } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<div class="card bg-base-100 border border-base-300 reveal">
+  <div class="card-body grid md:grid-cols-[1.3fr_1fr] gap-8">
+    <div>
+      <div class="flex items-start justify-between gap-3 mb-2">
+        <h3 class="font-display text-2xl">{title}</h3>
+        <StatusBadge status={status} label={statusLabel} />
+      </div>
+      <p class="font-display italic text-lg mb-3">{problem}</p>
+      <p class="text-base-content/70">{description}</p>
+      <div class="mt-4">
+        <a href={`${base}/proyectos/${id}/`} class="link text-secondary font-semibold text-sm">Ver caso completo →</a>
+      </div>
+    </div>
+    <div class="md:border-l md:border-base-300 md:pl-6 pt-4 md:pt-0 border-t md:border-t-0 border-base-300">
+      <h4 class="font-label text-xs uppercase tracking-wide text-base-content/50 mb-2">Stack</h4>
+      <div class="flex flex-wrap gap-2 mb-5">
+        {stack.map((s) => <Tag label={s} />)}
+      </div>
+      {competencias.length > 0 && (
+        <>
+          <h4 class="font-label text-xs uppercase tracking-wide text-base-content/50 mb-2">Competencias</h4>
+          <div class="flex flex-wrap gap-2">
+            {competencias.map((c) => <Tag label={c} />)}
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+</div>
