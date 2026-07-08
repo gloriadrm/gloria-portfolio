@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 // Para un repo de usuario (gloriadrm.github.io) pon base: '/'.
 export default defineConfig({
   site: 'https://gloriadrm.github.io',
-  base: '/gloria-portfolio',
+  base: '/portfolio',
   vite: {
     plugins: [tailwindcss()],
   },
