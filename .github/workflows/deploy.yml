@@ -27,10 +27,22 @@ jobs:
           node-version: 22
           package-manager: npm@latest
 
+      - name: Empaquetar artefacto de Pages
+        run: |
+          tar \
+            --dereference --hard-dereference \
+            --directory ./dist \
+            -cvf "$RUNNER_TEMP/artifact.tar" \
+            --exclude=.git \
+            --exclude=.github \
+            .
+
       - name: Subir artefacto de Pages
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          path: ./dist
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
           overwrite: true
 
   deploy:
