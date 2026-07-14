@@ -21,6 +21,7 @@ npm-debug.log*
 # Archivos temporales
 *.tmp
 *.bak
+.playwright-cli/
 
 # Archivos de Word temporales
 ~$*.docx
