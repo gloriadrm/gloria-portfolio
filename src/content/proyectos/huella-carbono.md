@@ -1,62 +1,78 @@
 ---
-title: "Transición energética y su huella de carbono"
-status: "progress"
-statusLabel: "En progreso"
-problem: "¿Cómo ha evolucionado el mix energético mundial y su huella de carbono por país y década, y qué relación hay entre generación renovable y emisiones?"
-description: "Pipeline analítico completo con arquitectura ELT. Los datos se modelan con dbt en capas (staging, intermediate, marts), se validan con tests automáticos y se documentan para garantizar su calidad. Un dashboard interactivo en Power BI permite analizar la evolución del mix energético y las emisiones de CO2 por país y periodo temporal."
-stack: ["dbt Fusion 2.0", "Snowflake", "Power BI", "SQL", "Git", "GitHub"]
-competencias: ["Modelado dimensional", "ELT", "Testing", "Data quality", "Documentación", "Power BI"]
+title: "Transición energética y descarbonización global"
+problem: "¿Qué países reducen emisiones por una transición energética real y cuáles solo por el colapso de su economía, y cómo cambia el ranking de descarbonización según se mida en términos absolutos o porcentuales?"
+description: "Pipeline analítico end-to-end sobre emisiones de CO2 y transición energética en más de 190 países (1990-2022). Los datos de Our World in Data se transforman con dbt Core en capas sobre Snowflake hasta una tabla de hechos unpivotada, que alimenta dos dashboards en Tableau diseñados para separar la descarbonización real de la reducción por colapso económico y para contextualizar las emisiones dentro del crecimiento económico de cada país."
+stack: ["Snowflake", "dbt Core", "SQL", "Tableau", "GitHub"]
+competencias: ["Modelado analítico por capas en dbt", "Diseño de un modelo unpivotado para filtrado dinámico en BI", "Análisis de desacoplamiento entre crecimiento económico y emisiones", "Storytelling analítico orientado a preguntas de negocio", "Diseño de dashboards interactivos con Dashboard Actions"]
 order: 1
-decisionDiff:
-  elegido:
-    titulo: "ELT"
-    detalle: "Cargar primero en Snowflake y transformar después con dbt: cada paso queda versionado, testeado y documentado."
-  descartado:
-    titulo: "ETL"
-    detalle: "Transformar antes de cargar. Más rígido: cualquier cambio de lógica exige tocar un script externo que no queda versionado ni testeado igual."
+github: "https://github.com/gloriadrm/dbt-carbon-footprint"
+memoria: "/proyectos/huella-carbono/memoria.pdf"
 queDescarte:
-  - "Imputar a cero los nulos de emisiones de gas o carbón en microestados: representan ausencia real de esa actividad, no datos faltantes, así que se dejan como null."
-  - "Usar ACCOUNTADMIN como rol para crear la infraestructura de Snowflake: genera inconsistencias de privilegios frente al rol con el que se conecta dbt (SYSADMIN)."
-  - "Normalizar manualmente los nombres de país: en su lugar, un LOWER() resuelve el choque entre las mayúsculas de Snowflake y las minúsculas del seed de forma consistente."
+  - "Resolver el join entre emisiones y energía dentro de la propia capa staging: se descartó para mantener stg_co2 y stg_energy independientes y reutilizables por separado — el cruce vive solo en intermediate, del que derivan todos los marts."
+  - "Repetir la lógica de nombres, unidades y categorías de cada métrica en cada mart que las necesita: se centralizó en el seed metric_catalog.csv, que se une a fct_country_year_metrics para enriquecer cada fila una única vez."
 aprendizajes:
-  - "Cuándo usar modelos incrementales en dbt y cómo afectan al rendimiento de un pipeline analítico frente a una reconstrucción completa (full refresh)."
-  - "La infraestructura de Snowflake debe crearse con el mismo rol con el que se conecta dbt — usar un rol distinto provoca errores de privilegios difíciles de rastrear."
-  - "No todos los nulos significan datos faltantes: los nulos de PIB en 2023–2024 responden a un rezago de consolidación de la fuente (OWID), mientras que los nulos en emisiones de gas o carbón en microestados reflejan ausencia real de esa actividad — cada caso exige un tratamiento distinto, nunca imputar a cero por defecto."
-  - "dbt Fusion 2.0 introduce diferencias de sintaxis frente al dbt clásico (por ejemplo, arguments: en tests parametrizados) que conviene conocer antes de migrar un proyecto."
+  - "Un porcentaje de reducción sin conocer el valor absoluto de partida puede ser engañoso: el contexto es tan parte del análisis como el propio dato."
+  - "La ausencia de datos también es información, los países sin mix energético reportado en OWID son, en general, los que no han emprendido ninguna transición activa."
+  - "Dashboard Actions en Tableau exige nombres y tipos de campo idénticos entre hojas; usar una función de agregación en vez del campo directo puede romper el resaltado cruzado entre visualizaciones."
+  - "Los filtros a nivel de fuente de datos son más fiables que los de hoja para eliminar valores nulos de los selectores."
+  - "Estructurar cada visualización alrededor de una única pregunta mejora la legibilidad del dashboard más que añadir más gráficos."
 mejorasFuturas:
-  - "Tests adicionales con dbt_expectations para reglas de negocio más específicas."
-  - "Alertas automáticas si el pipeline detecta un salto anómalo en las emisiones de un país (posible error de fuente)."
-  - "Modelos incrementales en las capas de mayor volumen para reducir el tiempo de build."
-  - "Publicar el dashboard en un workspace de Power BI con enlace público de solo lectura."
+  - "Incorporar el PIB vía la API del Banco Mundial para extender el análisis de desacoplamiento más allá de 2022."
+  - "Documentar los países con datos parciales (Corea del Norte, Yemen, Siria) como información analítica explícita, en vez de tratarlos como huecos sin más."
+  - "Incorporar datos mensuales de la IEA para captar variaciones estacionales que la granularidad anual no recoge."
 siVolvieraEmpezar:
-  - "Definiría desde el día 1 una convención explícita para el tratamiento de nulos (cuándo son ausencia real y cuándo dato faltante), en vez de decidirlo caso a caso sobre la marcha."
-  - "Empezaría con modelos incrementales en las capas de mayor volumen desde el principio, no como mejora futura: el full refresh se nota en cuanto el dataset crece."
-  - "Documentaría el rol de Snowflake usado en cada paso desde el primer commit — el error de privilegios por usar ACCOUNTADMIN me habría costado menos tiempo de detectar."
+  - "Diseñaría el modelo pensando primero en las preguntas de negocio a responder, no en los datos disponibles."
+  - "Incorporaría datos de política climática desde el principio, para poder hablar de causalidad y no solo de correlación."
 ---
 
 ## Dataset
 
-Datos públicos de **Our World in Data (OWID)**: series históricas de emisiones de CO₂ por país y las correspondientes al mix energético (generación por fuente: fósil, nuclear, renovable). Cobertura de más de 200 países y territorios, con series desde principios del siglo XX hasta la actualidad.
+Datos públicos de **Our World in Data (OWID)**, con metodología equivalente a la del IPCC y la IEA: series de emisiones de CO₂ (`owid-co2-data`, ~50.000 registros) y de mix energético (`owid-energy-data`, ~22.000 registros) para más de 190 países. El análisis se acota a 1990 por las discontinuidades que introduce la disolución de la URSS en los datos de Europa del Este, y a 2022 por la disponibilidad de datos de PIB.
 
 ## Arquitectura
 
-Snowflake actúa como warehouse; dbt Fusion 2.0 gestiona las transformaciones y los tests entre capas:
+![Arquitectura del pipeline: fuentes en RAW_OWID, staging, intermediate y marts en dbt](../../assets/proyectos/huella-carbono/arquitectura-dbt.png)
 
-```
-staging (stg_co2, stg_energy)
-  → intermediate (int_country_year_energy)
-    → marts (dim_country, dim_year, fct_country_year_metrics — 12 tests de calidad)
-      → Power BI (dashboard por país / década)
-```
+*Snowflake actúa como warehouse; dbt Core organiza la transformación en tres capas hasta la tabla de hechos que consume Tableau.*
 
-El modelo final en `fct_country_year_metrics` unpivota 16 métricas a formato largo para facilitar el análisis en Power BI.
+`stg_co2` y `stg_energy` limpian y tipan cada fuente por separado. `int_country_year_energy` las cruza por país y año, y es la única base de la que derivan los tres marts: la tabla de hechos unpivotada (`fct_country_year_metrics`) y dos reports especializados en descarbonización y en la relación PIB–CO₂.
 
 ## Decisiones de diseño
 
-- **Arquitectura ELT** en lugar de ETL: cargar primero en Snowflake y transformar después con dbt, para que cada transformación quede versionada, testeada y documentada en vez de vivir en un script externo.
-- **Estructura en capas** (staging → intermediate → marts) siguiendo las convenciones de dbt, separando la limpieza de datos del modelado de negocio.
-- **Formato largo** (unpivot de 16 métricas) en la tabla de hechos final, para que Power BI pueda filtrar dinámicamente por métrica sin necesitar una columna por indicador.
-- **Power BI** frente a Tableau para esta primera iteración, por ser la herramienta más demandada en el mercado español.
+**Carga directa a Snowflake, sin scripts intermedios.** Los CSV de OWID se importan tal cual a `RAW_OWID`; toda la limpieza, el tipado y el modelado ocurren después, versionados y testeados en dbt. Simplifica la ingesta y hace el pipeline reproducible desde una fuente pública, sin infraestructura adicional que mantener.
 
-<!-- Añade capturas del dashboard o del DAG de dbt en public/proyectos/huella-carbono/ y referéncialas aquí: -->
-<!-- ![Dashboard de Power BI](/proyectos/huella-carbono/dashboard.png) -->
+**Formato largo en la tabla de hechos.** `fct_country_year_metrics` unpivota 16 métricas a formato (country, year, metric, value) en vez de mantenerlas en columnas. Permite filtrar cualquier métrica en Tableau con un único parámetro dinámico, sin campos calculados por visualización — al coste de queries SQL menos directas fuera del dashboard.
+
+**Un parámetro para alternar entre reducción porcentual y absoluta**, en vez de fijar una sola métrica de descarbonización.
+
+## Dashboards
+
+El proyecto culmina en dos dashboards interactivos desarrollados en Tableau, cada uno orientado a una pregunta analítica distinta.
+
+### Dashboard 1 · Visión global
+
+Permite analizar la evolución de las emisiones y del mix energético por país y década.
+
+![Visión Global: mapa interactivo de emisiones por país y década](/portfolio/proyectos/huella-carbono/dashboard-vision-global-mapa.webp)
+
+![Visión Global: evolución del mix energético y desglose renovable](/portfolio/proyectos/huella-carbono/dashboard-vision-global-mix.webp)
+
+*Filtrar un país en el mapa actualiza el resto de gráficos mediante Dashboard Actions.*
+
+**Qué permite responder**
+
+- ¿Qué países concentran las mayores emisiones, en total y per cápita?
+- ¿Qué ritmo de adopción de renovables presenta cada país?
+
+### Dashboard 2 · Descarbonización
+
+Analiza la reducción de emisiones desde dos perspectivas complementarias.
+
+![Descarbonización: top países y desacoplamiento PIB vs. CO₂, alternando entre reducción porcentual y absoluta](/portfolio/proyectos/huella-carbono/dashboard-descarbonizacion.webp)
+
+*Alternar el parámetro cambia el ranking por completo: Moldavia, Ucrania y Estonia lideran en porcentual por el colapso económico postsoviético; Rusia, Ucrania y Alemania lideran en absoluto por el volumen de CO₂ retirado.*
+
+**Qué permite responder**
+
+- ¿Qué países reducen más emisiones en términos absolutos y cuáles en términos porcentuales?
+- ¿Existe desacoplamiento entre crecimiento económico y reducción de emisiones?

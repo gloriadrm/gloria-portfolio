@@ -4,9 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroBg from '../components/HeroBg.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import Tag from '../components/Tag.astro';
 import site from '../data/site.json';
-import roadmap from '../data/roadmap.json';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const proyectos = (await getCollection('proyectos')).sort((a, b) => a.data.order - b.data.order);
@@ -49,12 +47,11 @@ const latest = proyectos.slice(1);
         <FeaturedProject
           id={featured.id}
           title={featured.data.title}
-          status={featured.data.status}
-          statusLabel={featured.data.statusLabel}
           problem={featured.data.problem}
           description={featured.data.description}
           stack={featured.data.stack}
           competencias={featured.data.competencias}
+          github={featured.data.github}
         />
       )}
     </div>
@@ -73,46 +70,16 @@ const latest = proyectos.slice(1);
             <ProjectCard
               id={p.id}
               title={p.data.title}
-              status={p.data.status}
-              statusLabel={p.data.statusLabel}
               problem={p.data.problem}
               description={p.data.description}
               stack={p.data.stack}
+              github={p.data.github}
             />
           ))}
         </div>
       </div>
     </section>
   )}
-
-  <!-- PRÓXIMOS PROYECTOS -->
-  <section class="py-16 border-t border-base-300">
-    <div class="max-w-5xl mx-auto px-6">
-      <div class="mb-6 reveal">
-        <span class="block font-label text-xs tracking-widest uppercase text-primary mb-2">Hacia dónde voy</span>
-        <h2 class="font-display text-2xl mb-2">Próximos retos</h2>
-        <p class="text-base-content/70 max-w-xl">Una hoja de ruta de los proyectos que se desarrollarán en siguientes etapas.</p>
-      </div>
-      <ul class="timeline timeline-vertical timeline-compact reveal">
-        {roadmap.map((r, i) => (
-          <li>
-            {i > 0 && <hr class="bg-base-300" />}
-            <div class="timeline-middle">
-              <div class="w-3 h-3 rounded-full bg-primary"></div>
-            </div>
-            <div class="timeline-end timeline-box bg-base-100 border-base-300 shadow-none mb-6 ml-2">
-              <h3 class="font-display text-base mb-1">{r.title}</h3>
-              <p class="text-base-content/70 text-sm mb-2 max-w-xl">{r.problem}</p>
-              <div class="flex flex-wrap gap-2">
-                {r.stack.map((s: string) => <Tag label={s} />)}
-              </div>
-            </div>
-            {i < roadmap.length - 1 && <hr class="bg-base-300" />}
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
 
   <!-- CONTACT -->
   <section id="contact" class="py-16 border-t border-base-300">

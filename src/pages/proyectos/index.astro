@@ -24,11 +24,10 @@ const proyectos = (await getCollection('proyectos')).sort((a, b) => a.data.order
           <ProjectCard
             id={p.id}
             title={p.data.title}
-            status={p.data.status}
-            statusLabel={p.data.statusLabel}
             problem={p.data.problem}
             description={p.data.description}
             stack={p.data.stack}
+            github={p.data.github}
           />
         ))}
       </div>

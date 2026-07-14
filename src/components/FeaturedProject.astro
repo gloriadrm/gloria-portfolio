@@ -1,31 +1,29 @@
 ---
 import Tag from './Tag.astro';
-import StatusBadge from './StatusBadge.astro';
 
 interface Props {
   id: string;
   title: string;
-  status: 'progress' | 'done';
-  statusLabel: string;
   problem: string;
   description: string;
   stack: string[];
   competencias: string[];
+  github?: string;
 }
-const { id, title, status, statusLabel, problem, description, stack, competencias } = Astro.props;
+const { id, title, problem, description, stack, competencias, github } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <div class="card bg-base-100 border border-base-300 reveal">
   <div class="card-body grid md:grid-cols-[1.3fr_1fr] gap-8">
     <div>
-      <div class="flex items-start justify-between gap-3 mb-2">
-        <h3 class="font-display text-2xl">{title}</h3>
-        <StatusBadge status={status} label={statusLabel} />
-      </div>
+      <h3 class="font-display text-2xl mb-2">{title}</h3>
       <p class="font-display italic text-lg mb-3">{problem}</p>
       <p class="text-base-content/70">{description}</p>
-      <div class="mt-4">
+      <div class="mt-4 flex flex-wrap items-center gap-5">
         <a href={`${base}/proyectos/${id}/`} class="link text-secondary font-semibold text-sm">Ver caso completo →</a>
+        {github && (
+          <a href={github} target="_blank" rel="noopener" class="link text-base-content/60 font-semibold text-sm">GitHub ↗</a>
+        )}
       </div>
     </div>
     <div class="md:border-l md:border-base-300 md:pl-6 pt-4 md:pt-0 border-t md:border-t-0 border-base-300">

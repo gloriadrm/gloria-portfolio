@@ -7,15 +7,13 @@ const proyectos = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/proyectos' }),
   schema: z.object({
     title: z.string(),
-    status: z.enum(['progress', 'done']),
-    statusLabel: z.string(),
     problem: z.string(),
     description: z.string(),
     stack: z.array(z.string()),
     competencias: z.array(z.string()).default([]),
     order: z.number().default(0),
     github: z.string().optional(),
-    demo: z.string().optional(),
+    memoria: z.string().optional(),
     // Contenido estructurado para los componentes daisyUI del caso de
     // estudio (collapse, diff) — se mantiene fuera del cuerpo markdown
     // porque se renderiza como componente, no como prosa.
@@ -25,10 +23,6 @@ const proyectos = defineCollection({
     // Reflexión de cierre de cada caso de estudio: qué harías distinto con
     // lo que sabes ahora. Se muestra como bloque destacado, no como prosa.
     siVolvieraEmpezar: z.array(z.string()).default([]),
-    decisionDiff: z.object({
-      elegido: z.object({ titulo: z.string(), detalle: z.string() }),
-      descartado: z.object({ titulo: z.string(), detalle: z.string() }),
-    }).optional(),
   }),
 });
 

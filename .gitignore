@@ -14,3 +14,13 @@ npm-debug.log*
 
 # macOS
 .DS_Store
+
+# Recursos privados de proyectos
+/proyectos/
+
+# Archivos temporales
+*.tmp
+*.bak
+
+# Archivos de Word temporales
+~$*.docx

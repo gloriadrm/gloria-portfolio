@@ -2,7 +2,6 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Tag from '../../components/Tag.astro';
-import StatusBadge from '../../components/StatusBadge.astro';
 
 export async function getStaticPaths() {
   const proyectos = await getCollection('proyectos');
@@ -15,7 +14,13 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const { title, status, statusLabel, problem, stack, competencias, queDescarte, aprendizajes, mejorasFuturas, siVolvieraEmpezar, decisionDiff } = entry.data;
+const { title, problem, stack, competencias, queDescarte, aprendizajes, mejorasFuturas, siVolvieraEmpezar, github, memoria } = entry.data;
+
+// Recursos estáticos (ej. public/proyectos/<slug>/memoria.pdf) son rutas relativas a
+// la raíz del sitio: necesitan el base path del despliegue. Las URLs externas (GitHub) no.
+const resolveLink = (url?: string) => (url && !/^https?:\/\//.test(url) ? `${base}${url}` : url);
+const githubHref = resolveLink(github);
+const memoriaHref = resolveLink(memoria);
 ---
 <BaseLayout title={`${title} — Gloria del Rio Márquez`} description={problem}>
 
@@ -23,16 +28,13 @@ const { title, status, statusLabel, problem, stack, competencias, queDescarte, a
     <div class="max-w-3xl mx-auto px-6">
       <a href={`${base}/proyectos/`} class="text-sm font-semibold text-secondary link mb-6 inline-block">← Volver a proyectos</a>
       <span class="block font-label text-xs tracking-widest uppercase text-primary mb-3">Caso de estudio</span>
-      <div class="flex items-start justify-between gap-4 flex-wrap">
-        <h1 class="font-display text-3xl md:text-4xl max-w-xl">{title}</h1>
-        <StatusBadge status={status} label={statusLabel} />
-      </div>
+      <h1 class="font-display text-3xl md:text-4xl max-w-xl">{title}</h1>
       <p class="font-display italic text-xl mt-6 border-l-2 border-primary pl-5 max-w-2xl">{problem}</p>
     </div>
   </section>
 
   <section class="py-12">
-    <div class="max-w-3xl mx-auto px-6 prose prose-neutral max-w-none
+    <div class="max-w-3xl mx-auto px-6 prose prose-neutral
       prose-h2:font-label prose-h2:text-sm prose-h2:tracking-widest prose-h2:uppercase prose-h2:text-secondary prose-h2:mb-4 prose-h2:mt-10
       prose-p:text-base-content/80 prose-li:text-base-content/80
       prose-pre:bg-base-200 prose-pre:text-base-content prose-code:text-primary">
@@ -40,29 +42,9 @@ const { title, status, statusLabel, problem, stack, competencias, queDescarte, a
     </div>
   </section>
 
-  {(decisionDiff || queDescarte.length > 0 || aprendizajes.length > 0) && (
+  {(queDescarte.length > 0 || aprendizajes.length > 0) && (
     <section class="py-10 border-t border-base-300">
       <div class="max-w-3xl mx-auto px-6 flex flex-col gap-4">
-        {decisionDiff && (
-          <div class="collapse collapse-arrow bg-base-100 border border-base-300">
-            <input type="checkbox" checked />
-            <div class="collapse-title font-display text-lg">Decisión clave: {decisionDiff.elegido.titulo} vs. {decisionDiff.descartado.titulo}</div>
-            <div class="collapse-content">
-              <div class="grid sm:grid-cols-2 gap-4">
-                <div class="rounded-box border border-primary/30 bg-primary/5 p-4">
-                  <span class="font-label text-xs uppercase text-primary mb-2 block">Elegí</span>
-                  <h4 class="font-display text-base mb-1">{decisionDiff.elegido.titulo}</h4>
-                  <p class="text-sm text-base-content/70">{decisionDiff.elegido.detalle}</p>
-                </div>
-                <div class="rounded-box border border-base-300 bg-base-200/60 p-4">
-                  <span class="font-label text-xs uppercase text-base-content/50 mb-2 block">Descarté</span>
-                  <h4 class="font-display text-base mb-1">{decisionDiff.descartado.titulo}</h4>
-                  <p class="text-sm text-base-content/70">{decisionDiff.descartado.detalle}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
         {queDescarte.length > 0 && (
           <div class="collapse collapse-arrow bg-base-100 border border-base-300">
             <input type="checkbox" />
@@ -133,6 +115,22 @@ const { title, status, statusLabel, problem, stack, competencias, queDescarte, a
       )}
     </div>
   </section>
+
+  {(github || memoria) && (
+    <section class="py-10 border-t border-base-300">
+      <div class="max-w-3xl mx-auto px-6">
+        <h3 class="font-label text-xs uppercase tracking-wide text-base-content/50 mb-3">¿Quieres profundizar?</h3>
+        <div class="flex flex-wrap gap-x-6 gap-y-2">
+          {githubHref && (
+            <a href={githubHref} target="_blank" rel="noopener" class="link text-secondary font-semibold text-sm">→ Ver repositorio</a>
+          )}
+          {memoriaHref && (
+            <a href={memoriaHref} target="_blank" rel="noopener" class="link text-secondary font-semibold text-sm">→ Leer la memoria técnica</a>
+          )}
+        </div>
+      </div>
+    </section>
+  )}
 
   <section class="py-10 border-t border-base-300">
     <div class="max-w-3xl mx-auto px-6">

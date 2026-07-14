@@ -1,0 +1,142 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "Gloria del Rio" [ref=e4] [cursor=pointer]:
+        - /url: /portfolio/
+      - generic [ref=e5]:
+        - link "Sobre mí" [ref=e6] [cursor=pointer]:
+          - /url: /portfolio/sobre-mi/
+        - link "Proyectos" [ref=e7] [cursor=pointer]:
+          - /url: /portfolio/proyectos/
+        - link "Contacto" [ref=e8] [cursor=pointer]:
+          - /url: /portfolio/#contact
+        - generic "Cambiar a tema oscuro" [ref=e9] [cursor=pointer]:
+          - checkbox "Cambiar a tema oscuro"
+          - img [ref=e10]
+          - img [ref=e12]
+  - main [ref=e14]:
+    - generic [ref=e16]:
+      - link "← Volver a proyectos" [ref=e17] [cursor=pointer]:
+        - /url: /portfolio/proyectos/
+      - generic [ref=e18]: Caso de estudio
+      - heading "Transición energética y descarbonización global" [level=1] [ref=e19]
+      - paragraph [ref=e20]: ¿Qué países reducen emisiones por una transición energética real y cuáles solo por el colapso de su economía, y cómo cambia el ranking de descarbonización según se mida en términos absolutos o porcentuales?
+    - generic [ref=e22]:
+      - heading "Dataset" [level=2] [ref=e23]
+      - paragraph [ref=e24]:
+        - text: Datos públicos de
+        - strong [ref=e25]: Our World in Data (OWID)
+        - text: ", con metodología equivalente a la del IPCC y la IEA: series de emisiones de CO₂ ("
+        - code [ref=e26]: owid-co2-data
+        - text: ", ~50.000 registros) y de mix energético ("
+        - code [ref=e27]: owid-energy-data
+        - text: ", ~22.000 registros) para más de 190 países. El análisis se acota a 1990 por las discontinuidades que introduce la disolución de la URSS en los datos de Europa del Este, y a 2022 por la disponibilidad de datos de PIB."
+      - heading "Arquitectura" [level=2] [ref=e28]
+      - paragraph [ref=e29]:
+        - 'img "Arquitectura del pipeline: fuentes en RAW_OWID, staging, intermediate y marts en dbt" [ref=e30]'
+      - paragraph [ref=e31]:
+        - emphasis [ref=e32]: Snowflake actúa como warehouse; dbt Core organiza la transformación en tres capas hasta la tabla de hechos que consume Tableau.
+      - paragraph [ref=e33]:
+        - code [ref=e34]: stg_co2
+        - text: "y"
+        - code [ref=e35]: stg_energy
+        - text: limpian y tipan cada fuente por separado.
+        - code [ref=e36]: int_country_year_energy
+        - text: "las cruza por país y año, y es la única base de la que derivan los tres marts: la tabla de hechos unpivotada ("
+        - code [ref=e37]: fct_country_year_metrics
+        - text: ) y dos reports especializados en descarbonización y en la relación PIB–CO₂.
+      - heading "Decisiones de diseño" [level=2] [ref=e38]
+      - paragraph [ref=e39]:
+        - strong [ref=e40]: Carga directa a Snowflake, sin scripts intermedios.
+        - text: Los CSV de OWID se importan tal cual a
+        - code [ref=e41]: RAW_OWID
+        - text: ; toda la limpieza, el tipado y el modelado ocurren después, versionados y testeados en dbt. Simplifica la ingesta y hace el pipeline reproducible desde una fuente pública, sin infraestructura adicional que mantener.
+      - paragraph [ref=e42]:
+        - strong [ref=e43]: Formato largo en la tabla de hechos.
+        - code [ref=e44]: fct_country_year_metrics
+        - text: unpivota 16 métricas a formato (country, year, metric, value) en vez de mantenerlas en columnas. Permite filtrar cualquier métrica en Tableau con un único parámetro dinámico, sin campos calculados por visualización — al coste de queries SQL menos directas fuera del dashboard.
+      - paragraph [ref=e45]:
+        - strong [ref=e46]: Un parámetro para alternar entre reducción porcentual y absoluta
+        - text: ", en vez de fijar una sola métrica de descarbonización."
+      - heading "Dashboards" [level=2] [ref=e47]
+      - paragraph [ref=e48]: El proyecto culmina en dos dashboards interactivos desarrollados en Tableau, cada uno orientado a una pregunta analítica distinta.
+      - heading "Dashboard 1 · Visión global" [level=3] [ref=e49]
+      - paragraph [ref=e50]: Permite analizar la evolución de las emisiones y del mix energético por país y década.
+      - paragraph [ref=e51]:
+        - 'img "Visión Global: mapa interactivo de emisiones por país y década" [ref=e52]'
+      - paragraph [ref=e53]:
+        - 'img "Visión Global: evolución del mix energético y desglose renovable" [ref=e54]'
+      - paragraph [ref=e55]:
+        - emphasis [ref=e56]: Filtrar un país en el mapa actualiza el resto de gráficos mediante Dashboard Actions.
+      - paragraph [ref=e57]:
+        - strong [ref=e58]: Qué permite responder
+      - list [ref=e59]:
+        - listitem [ref=e60]: ¿Qué países concentran las mayores emisiones, en total y per cápita?
+        - listitem [ref=e61]: ¿Qué ritmo de adopción de renovables presenta cada país?
+      - heading "Dashboard 2 · Descarbonización" [level=3] [ref=e62]
+      - paragraph [ref=e63]: Analiza la reducción de emisiones desde dos perspectivas complementarias.
+      - paragraph [ref=e64]:
+        - 'img "Descarbonización: top países y desacoplamiento PIB vs. CO₂, alternando entre reducción porcentual y absoluta" [ref=e65]'
+      - paragraph [ref=e66]:
+        - emphasis [ref=e67]: "Alternar el parámetro cambia el ranking por completo: Moldavia, Ucrania y Estonia lideran en porcentual por el colapso económico postsoviético; Rusia, Ucrania y Alemania lideran en absoluto por el volumen de CO₂ retirado."
+      - paragraph [ref=e68]:
+        - strong [ref=e69]: Qué permite responder
+      - list [ref=e70]:
+        - listitem [ref=e71]: ¿Qué países reducen más emisiones en términos absolutos y cuáles en términos porcentuales?
+        - listitem [ref=e72]: ¿Existe desacoplamiento entre crecimiento económico y reducción de emisiones?
+    - generic [ref=e74]:
+      - generic [ref=e75]:
+        - checkbox [ref=e76] [cursor=pointer]
+        - generic [ref=e77] [cursor=pointer]: Qué descarté (2)
+      - generic [ref=e78]:
+        - checkbox [checked] [ref=e79] [cursor=pointer]
+        - generic [ref=e80] [cursor=pointer]: Aprendizajes (5)
+        - list [ref=e82]:
+          - listitem [ref=e83]: "Un porcentaje de reducción sin conocer el valor absoluto de partida puede ser engañoso: el contexto es tan parte del análisis como el propio dato."
+          - listitem [ref=e84]: La ausencia de datos también es información — los países sin mix energético reportado en OWID son, en general, los que no han emprendido ninguna transición activa.
+          - listitem [ref=e85]: Dashboard Actions en Tableau exige nombres y tipos de campo idénticos entre hojas; usar una función de agregación en vez del campo directo puede romper el resaltado cruzado entre visualizaciones.
+          - listitem [ref=e86]: Los filtros a nivel de fuente de datos son más fiables que los de hoja para eliminar valores nulos de los selectores.
+          - listitem [ref=e87]: Estructurar cada visualización alrededor de una única pregunta mejora la legibilidad del dashboard más que añadir más gráficos.
+    - generic [ref=e89]:
+      - heading "Mejoras futuras" [level=2] [ref=e90]
+      - list [ref=e91]:
+        - listitem [ref=e92]: Incorporar el PIB vía la API del Banco Mundial para extender el análisis de desacoplamiento más allá de 2022.
+        - listitem [ref=e93]: Documentar los países con datos parciales (Corea del Norte, Yemen, Siria) como información analítica explícita, en vez de tratarlos como huecos sin más.
+        - listitem [ref=e94]: Incorporar datos mensuales de la IEA para captar variaciones estacionales que la granularidad anual no recoge.
+    - generic [ref=e98]:
+      - heading "Si volviera a empezar…" [level=2] [ref=e99]
+      - list [ref=e100]:
+        - listitem [ref=e101]: Diseñaría el modelo pensando primero en las preguntas de negocio a responder, no en los datos disponibles.
+        - listitem [ref=e102]: Añadiría tests de dbt (not_null, unique, relationships) desde el inicio, en vez de dejarlos como mejora futura.
+        - listitem [ref=e103]: Incorporaría datos de política climática desde el principio, para poder hablar de causalidad y no solo de correlación.
+    - generic [ref=e105]:
+      - generic [ref=e106]:
+        - heading "Stack" [level=3] [ref=e107]
+        - generic [ref=e108]:
+          - generic [ref=e109]: Snowflake
+          - generic [ref=e110]: dbt Core
+          - generic [ref=e111]: SQL
+          - generic [ref=e112]: Tableau
+          - generic [ref=e113]: GitHub
+      - generic [ref=e114]:
+        - heading "Competencias demostradas" [level=3] [ref=e115]
+        - generic [ref=e116]:
+          - generic [ref=e117]: Modelado analítico por capas en dbt
+          - generic [ref=e118]: Diseño de un modelo unpivotado para filtrado dinámico en BI
+          - generic [ref=e119]: Análisis de desacoplamiento entre crecimiento económico y emisiones
+          - generic [ref=e120]: Storytelling analítico orientado a preguntas de negocio
+          - generic [ref=e121]: Diseño de dashboards interactivos con Dashboard Actions
+    - generic [ref=e123]:
+      - heading "¿Quieres profundizar?" [level=3] [ref=e124]
+      - generic [ref=e125]:
+        - link "→ Ver repositorio" [ref=e126] [cursor=pointer]:
+          - /url: https://github.com/gloriadrm/dbt-carbon-footprint
+        - link "→ Leer la memoria técnica" [ref=e127] [cursor=pointer]:
+          - /url: /portfolio/proyectos/huella-carbono/memoria.pdf
+    - link "← Volver a proyectos" [ref=e130] [cursor=pointer]:
+      - /url: /portfolio/proyectos/
+  - contentinfo [ref=e131]:
+    - generic [ref=e132]:
+      - text: © 2026 Gloria del Rio Márquez ·
+      - link "Sobre mí" [ref=e133] [cursor=pointer]:
+        - /url: /portfolio/sobre-mi/
