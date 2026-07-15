@@ -26,6 +26,13 @@ jobs:
         with:
           node-version: 22
           package-manager: npm@latest
+        env:
+          # .env está en .gitignore (no se publica), así que hay que pasar la variable
+          # aquí explícitamente. Configúrala en Settings → Secrets and variables →
+          # Actions → Variables → New repository variable. No es información sensible
+          # (el ID de medición es público en el HTML de cualquier página), por eso es
+          # una "variable" y no un "secret".
+          PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
 
       - name: Empaquetar artefacto de Pages
         run: |
