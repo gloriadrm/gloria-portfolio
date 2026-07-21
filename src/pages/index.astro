@@ -5,6 +5,7 @@ import HeroBg from '../components/HeroBg.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import site from '../data/site.json';
+import { AnalyticsEvent } from '../lib/events';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const proyectos = (await getCollection('proyectos')).sort((a, b) => a.data.order - b.data.order);
@@ -94,7 +95,7 @@ const latest = proyectos.slice(1);
           <div class="flex flex-wrap justify-center gap-6 font-semibold text-secondary">
             <a href={`mailto:${site.email}`} class="link">{site.email}</a>
             <a href={`tel:${site.phone}`} class="link">{site.phoneDisplay}</a>
-            <a href={site.linkedin} target="_blank" rel="noopener" class="link">LinkedIn</a>
+            <a href={site.linkedin} target="_blank" rel="noopener" class="link" data-analytics-event={AnalyticsEvent.LINKEDIN_CLICK}>LinkedIn</a>
             <a href={site.github} target="_blank" rel="noopener" class="link">GitHub</a>
           </div>
         </div>

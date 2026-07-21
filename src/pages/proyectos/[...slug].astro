@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Tag from '../../components/Tag.astro';
+import { AnalyticsEvent } from '../../lib/events';
 
 export async function getStaticPaths() {
   const proyectos = await getCollection('proyectos');
@@ -22,10 +23,10 @@ const resolveLink = (url?: string) => (url && !/^https?:\/\//.test(url) ? `${bas
 const githubHref = resolveLink(github);
 const memoriaHref = resolveLink(memoria);
 ---
-<BaseLayout title={`${title} — Gloria del Rio Márquez`} description={problem}>
+<BaseLayout title={`${title} — Gloria del Rio Márquez`} description={problem} projectSlug={entry.id}>
 
   <section class="pt-14 pb-10 border-b border-base-300">
-    <div class="max-w-3xl mx-auto px-6">
+    <div class="max-w-5xl mx-auto px-6">
       <a href={`${base}/proyectos/`} class="text-sm font-semibold text-secondary link mb-6 inline-block">← Volver a proyectos</a>
       <span class="block font-label text-xs tracking-widest uppercase text-primary mb-3">Caso de estudio</span>
       <h1 class="font-display text-3xl md:text-4xl max-w-xl">{title}</h1>
@@ -34,7 +35,7 @@ const memoriaHref = resolveLink(memoria);
   </section>
 
   <section class="py-12">
-    <div class="max-w-3xl mx-auto px-6 prose prose-neutral
+    <div class="max-w-5xl mx-auto px-6 prose prose-neutral
       prose-h2:font-label prose-h2:text-sm prose-h2:tracking-widest prose-h2:uppercase prose-h2:text-secondary prose-h2:mb-4 prose-h2:mt-10
       prose-p:text-base-content/80 prose-li:text-base-content/80
       prose-pre:bg-base-200 prose-pre:text-base-content prose-code:text-primary">
@@ -44,7 +45,7 @@ const memoriaHref = resolveLink(memoria);
 
   {(queDescarte.length > 0 || aprendizajes.length > 0) && (
     <section class="py-10 border-t border-base-300">
-      <div class="max-w-3xl mx-auto px-6 flex flex-col gap-4">
+      <div class="max-w-5xl mx-auto px-6 flex flex-col gap-4">
         {queDescarte.length > 0 && (
           <div class="collapse collapse-arrow bg-base-100 border border-base-300">
             <input type="checkbox" />
@@ -73,7 +74,7 @@ const memoriaHref = resolveLink(memoria);
 
   {mejorasFuturas.length > 0 && (
     <section class="py-10 border-t border-base-300">
-      <div class="max-w-3xl mx-auto px-6">
+      <div class="max-w-5xl mx-auto px-6">
         <h2 class="font-label text-sm tracking-widest uppercase text-secondary mb-5">Mejoras futuras</h2>
         <ul class="list-disc pl-5 space-y-2 text-base-content/80 text-sm max-w-2xl">
           {mejorasFuturas.map((item) => <li>{item}</li>)}
@@ -84,7 +85,7 @@ const memoriaHref = resolveLink(memoria);
 
   {siVolvieraEmpezar.length > 0 && (
     <section class="py-12 border-t border-base-300">
-      <div class="max-w-3xl mx-auto px-6">
+      <div class="max-w-5xl mx-auto px-6">
         <div class="card bg-primary/10 border border-primary/30">
           <div class="card-body">
             <h2 class="font-display text-xl mb-4">Si volviera a empezar…</h2>
@@ -98,7 +99,7 @@ const memoriaHref = resolveLink(memoria);
   )}
 
   <section class="py-10 border-t border-base-300">
-    <div class="max-w-3xl mx-auto px-6 grid sm:grid-cols-2 gap-8">
+    <div class="max-w-5xl mx-auto px-6 grid sm:grid-cols-2 gap-8">
       <div>
         <h3 class="font-label text-xs uppercase tracking-wide text-base-content/50 mb-3">Stack</h3>
         <div class="flex flex-wrap gap-2">
@@ -118,14 +119,16 @@ const memoriaHref = resolveLink(memoria);
 
   {(github || memoria) && (
     <section class="py-10 border-t border-base-300">
-      <div class="max-w-3xl mx-auto px-6">
+      <div class="max-w-5xl mx-auto px-6">
         <h3 class="font-label text-xs uppercase tracking-wide text-base-content/50 mb-3">¿Quieres profundizar?</h3>
         <div class="flex flex-wrap gap-x-6 gap-y-2">
           {githubHref && (
-            <a href={githubHref} target="_blank" rel="noopener" class="link text-secondary font-semibold text-sm">→ Ver repositorio</a>
+            <a href={githubHref} target="_blank" rel="noopener" class="link text-secondary font-semibold text-sm"
+              data-analytics-event={AnalyticsEvent.GITHUB_CLICK} data-analytics-project={entry.id}>→ Ver repositorio</a>
           )}
           {memoriaHref && (
-            <a href={memoriaHref} target="_blank" rel="noopener" class="link text-secondary font-semibold text-sm">→ Leer la memoria técnica</a>
+            <a href={memoriaHref} target="_blank" rel="noopener" class="link text-secondary font-semibold text-sm"
+              data-analytics-event={AnalyticsEvent.MEMORY_DOWNLOAD} data-analytics-project={entry.id}>→ Leer la memoria técnica</a>
           )}
         </div>
       </div>
@@ -133,7 +136,7 @@ const memoriaHref = resolveLink(memoria);
   )}
 
   <section class="py-10 border-t border-base-300">
-    <div class="max-w-3xl mx-auto px-6">
+    <div class="max-w-5xl mx-auto px-6">
       <a href={`${base}/proyectos/`} class="text-sm font-semibold text-secondary link">← Volver a proyectos</a>
     </div>
   </section>

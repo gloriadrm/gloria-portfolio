@@ -137,3 +137,137 @@ body {
   margin: 0;
   color: var(--color-base-content);
 }
+
+/* Capturas dentro del cuerpo de cualquier página de proyecto: mismo ancho máximo,
+   centradas, mismo radio y sombra, una siempre debajo de otra — nunca en columnas.
+   Regla única y genérica (no específica de ningún proyecto): toda imagen dentro de
+   .prose hereda este tratamiento sin necesidad de clases adicionales en el .md. */
+.prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 2rem auto;
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.25);
+}
+
+/* Pestañas de casos de uso dentro de una página de proyecto: usa el componente
+   `tabs`/`tab-content` de daisyUI (CSS-only, sin JS) — ver
+   https://daisyui.com/components/tab/#tabs-with-content. Reutilizable en
+   cualquier proyecto: basta con repetir el patrón `input.tab` + `.tab-content`
+   en el cuerpo del .md. Solo se ajusta el espaciado alrededor del grupo. */
+.proyecto-tabs {
+  margin: 1.75rem 0;
+}
+.proyecto-tabs .tab-content {
+  padding-top: 1.5rem;
+}
+.proyecto-tabs .tab-content img {
+  margin-top: 1.5rem;
+}
+
+/* Decisiones de diseño dentro de una página de proyecto: cada decisión es una
+   tarjeta independiente (protagonista = la decisión, no el bloque de texto
+   corrido), con Problema/Decisión/Resultado distinguidos por un punto de
+   color — mismo significado siempre: rojo = tensión, ámbar = elección, verde
+   = consecuencia. Reutilizable en cualquier proyecto, sin CSS adicional. */
+.decision-group__title {
+  font-family: var(--font-mono-label);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+  margin: 2.5rem 0 1rem;
+}
+.decision-card {
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-box);
+  padding: 1.75rem 2rem;
+  margin: 1.5rem 0;
+}
+.decision-card__title {
+  font-family: var(--font-serif-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+}
+.decision-card__number {
+  font-family: var(--font-mono-label);
+  font-size: 0.95rem;
+  color: var(--color-primary);
+}
+.decision-card__step {
+  margin-top: 1.4rem;
+}
+.decision-card__step:first-of-type {
+  margin-top: 0;
+}
+.decision-card__step-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono-label);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.decision-card__step-label::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+.decision-card__step--problema .decision-card__step-label { color: var(--color-error); }
+.decision-card__step--problema .decision-card__step-label::before { background: var(--color-error); }
+.decision-card__step--decision .decision-card__step-label { color: var(--color-warning); }
+.decision-card__step--decision .decision-card__step-label::before { background: var(--color-warning); }
+.decision-card__step--resultado .decision-card__step-label { color: var(--color-success); }
+.decision-card__step--resultado .decision-card__step-label::before { background: var(--color-success); }
+.decision-card p {
+  margin: 0;
+}
+.decision-card img {
+  margin: 1.5rem 0 0.5rem;
+}
+
+/* Evidencia de apoyo dentro de una tarjeta de decisión (benchmarks, capturas de
+   validación, comparativas técnicas): oculta por defecto detrás de <details>
+   nativo, sin JS. La decisión se lee en segundos; la prueba queda a un clic
+   para quien quiera profundizar. Reutilizable en cualquier proyecto. */
+.decision-card details {
+  margin-top: 1.4rem;
+  border: 1px solid var(--color-base-300);
+  border-radius: var(--radius-field);
+  padding: 0.85rem 1.1rem;
+}
+.decision-card details[open] {
+  padding-bottom: 1.25rem;
+}
+.decision-card summary {
+  cursor: pointer;
+  font-family: var(--font-mono-label);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--color-secondary);
+  list-style: none;
+}
+.decision-card summary::-webkit-details-marker {
+  display: none;
+}
+.decision-card summary::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 0.5rem;
+  transition: transform 0.15s ease;
+}
+.decision-card details[open] summary::before {
+  transform: rotate(90deg);
+}
+.decision-card details img {
+  margin: 1rem 0 0.5rem;
+}

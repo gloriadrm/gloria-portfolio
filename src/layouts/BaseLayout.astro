@@ -6,8 +6,11 @@ import GoogleAnalytics from '../components/GoogleAnalytics.astro';
 interface Props {
   title: string;
   description?: string;
+  // Presente solo en la página de detalle de un proyecto — dispara el evento
+  // project_open. El resto de páginas no lo pasan y no se dispara nada.
+  projectSlug?: string;
 }
-const { title, description = 'Portfolio de Gloria del Rio Márquez.' } = Astro.props;
+const { title, description = 'Portfolio de Gloria del Rio Márquez.', projectSlug } = Astro.props;
 
 // Normalizado sin barra final: siempre escribimos `${base}/ruta` a partir de aquí.
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -72,7 +75,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     </div>
   </header>
 
-  <main class="flex-1">
+  <main class="flex-1" data-project-slug={projectSlug}>
     <slot />
   </main>
 
@@ -100,6 +103,30 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
         localStorage.setItem('gloria-theme', theme);
         themeToggles.forEach((other) => { if (other !== cb) other.checked = cb.checked; });
       });
+    });
+  </script>
+
+  <script>
+    // Tracking de GA4 centralizado: cualquier elemento con data-analytics-event
+    // se registra al hacer clic, sin tener que repetir el listener en cada
+    // componente. Para nuevos eventos, añadir el atributo en el HTML y (si
+    // hace falta) el nombre en src/lib/events.ts — no hay que tocar este script.
+    import { trackEvent } from '../lib/analytics';
+    import { AnalyticsEvent } from '../lib/events';
+
+    const main = document.querySelector<HTMLElement>('main[data-project-slug]');
+    if (main?.dataset.projectSlug) {
+      trackEvent(AnalyticsEvent.PROJECT_OPEN, { project: main.dataset.projectSlug });
+    }
+
+    document.addEventListener('click', (e) => {
+      const target = (e.target as HTMLElement)?.closest<HTMLElement>('[data-analytics-event]');
+      if (!target) return;
+      const event = target.dataset.analyticsEvent;
+      if (!event) return;
+      const params: Record<string, string> = {};
+      if (target.dataset.analyticsProject) params.project = target.dataset.analyticsProject;
+      trackEvent(event, params);
     });
   </script>
 </body>
